@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.2](https://github.com/kellerlabs/homeracker/compare/homeracker-v1.7.1...homeracker-v1.7.2) (2026-01-24)
+
+
+### 📦 Dependencies
+
+* update belfryscad/bosl2 digest to a9f31f0 ([#208](https://github.com/kellerlabs/homeracker/issues/208)) ([5d20a0e](https://github.com/kellerlabs/homeracker/commit/5d20a0ec795063ec73040c2f65c8d6971b908429))
+* update camunda/infra-global-github-actions digest to 8a60c6a ([#209](https://github.com/kellerlabs/homeracker/issues/209)) ([76887ec](https://github.com/kellerlabs/homeracker/commit/76887ec5bdae866c5c393db2bbcf7385a1faf9c1))
+
 ## [1.7.1](https://github.com/kellerlabs/homeracker/compare/homeracker-v1.7.0...homeracker-v1.7.1) (2026-01-18)
 
 
