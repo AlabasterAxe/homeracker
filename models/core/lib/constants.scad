@@ -41,6 +41,9 @@ LOCKPIN_HOLE_CHAMFER = 0.8; // Chamfer size in mm
 LOCKPIN_HOLE_SIDE_LENGTH = 4; // Square hole side length in mm
 LOCKPIN_HOLE_SIDE_LENGTH_DIMENSION = [LOCKPIN_HOLE_SIDE_LENGTH, LOCKPIN_HOLE_SIDE_LENGTH];
 
+// Connector dimensions
+CONNECTOR_SIDE_LENGTH = BASE_UNIT + BASE_STRENGTH * 2 + TOLERANCE;
+
 // HomeRacker Colors
 HR_YELLOW = "#f7b600";
 HR_BLUE = "#0056b3";
@@ -50,14 +53,14 @@ HR_CHARCOAL = "#333333";
 HR_WHITE = "#f0f0f0";
 
 // Standard rackmount measurements
-STD_UNIT_HEIGHT = 44.45;  // Height of one rack unit (1U = 44.45mm)
-STD_UNIT_DEPTH = 482.6;   // Standard rackmount depth (19" = 482.6mm)
-STD_WIDTH_10INCH = 254;   // 10" width in mm
+STD_UNIT_HEIGHT = 44.45; // Height of one rack unit (1U = 44.45mm)
+STD_UNIT_DEPTH = 482.6; // Standard rackmount depth (19" = 482.6mm)
+STD_WIDTH_10INCH = 254; // 10" width in mm
 STD_WIDTH_19INCH = 482.6; // 19" width in mm
 STD_MOUNT_SURFACE_WIDTH = 15.875; // Mounting surface width in mm
 
-STD_RACK_BORE_DISTANCE_Z = 15.875;          // Vertical distance between mounting holes in mm
-STD_RACK_BORE_DISTANCE_MARGIN_Z = 6.35;     // Top/bottom margin to first/last mounting hole in mm
+STD_RACK_BORE_DISTANCE_Z = 15.875; // Vertical distance between mounting holes in mm
+STD_RACK_BORE_DISTANCE_MARGIN_Z = 6.35; // Top/bottom margin to first/last mounting hole in mm
 
 // DEPRECATED: Legacy lowercase constants (will be removed in future versions)
 // Use uppercase constants above instead
