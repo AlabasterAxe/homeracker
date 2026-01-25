@@ -18,6 +18,12 @@ include <constants.scad>
  *   tabs (vector of 4 bools, default=[true, true, true, true]): 
  *       Which tabs to generate: [Top (+Y), Bottom (-Y), Left (-X), Right (+X)]
  *       Note: Direction mapping is relative to the panel center.
+ *   lacing (vector of 4 ints, default=[0, 0, 0, 0]):
+ *       Tab generation mode for each side: [Top, Bottom, Left, Right]
+ *       0: Continuous Strip (Solid, covers gaps).
+ *       1: Odd Interlace (Starts at 1st slot, skips one).
+ *       2: Even Interlace (Starts at 2nd slot, skips one).
+ *       Used when two panels share a support rod to interleave tabs.
  *
  * Produces:
  *   A flat panel to cover gaps between supports.
@@ -28,12 +34,12 @@ include <constants.scad>
  *   - Thickness = BASE_STRENGTH (2mm).
  *   
  *   Tabs:
- *   - Merged into a continuous strip to eliminate gaps between prongs.
+ *   - Default: Merged into a continuous strip (lacing=0).
+ *   - Laced: Discrete tabs for interleaving (lacing=1 or 2).
  *   - Extend from the panel edge to the Outer Connector Edge.
- *   - Mitered at 45 degrees (Bottom-Front edge chamfer) to allow abutting panels to join neatly.
- *   - Holes placed at BASE_UNIT spacing to match support holes.
+ *   - Mitered at 45 degrees (Bottom-Front edge) to allow abutting panels to join neatly.
  */
-module panel(rows = 1, cols = 1, tabs = [true, true, true, true]) {
+module panel(rows = 1, cols = 1, tabs = [true, true, true, true], lacing = [0, 0, 0, 0]) {
 
   // Calculate dimensions to fit between connectors
   // Grid Span = (Units + 1) * BASE_UNIT.
@@ -85,30 +91,38 @@ module panel(rows = 1, cols = 1, tabs = [true, true, true, true]) {
       // Top (+Y)
       if (tabs[0] && n_tabs_x > 0) {
         translate([0, panel_height / 2 + shift_y, 0])
-          panel_tab_strip(n_tabs_x, real_tab_length, panel_thickness, dist_to_hole, overlap);
+          panel_render_tab_side(n_tabs_x, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[0]);
       }
 
       // Bottom (-Y)
       if (tabs[1] && n_tabs_x > 0) {
         translate([0, -(panel_height / 2 + shift_y), 0])
           rotate([0, 0, 180])
-            panel_tab_strip(n_tabs_x, real_tab_length, panel_thickness, dist_to_hole, overlap);
+            panel_render_tab_side(n_tabs_x, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[1]);
       }
 
       // Left (-X)
       if (tabs[2] && n_tabs_y > 0) {
         translate([-(panel_width / 2 + shift_y), 0, 0])
           rotate([0, 0, 90])
-            panel_tab_strip(n_tabs_y, real_tab_length, panel_thickness, dist_to_hole, overlap);
+            panel_render_tab_side(n_tabs_y, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[2]);
       }
 
       // Right (+X)
       if (tabs[3] && n_tabs_y > 0) {
         translate([panel_width / 2 + shift_y, 0, 0])
           rotate([0, 0, -90])
-            panel_tab_strip(n_tabs_y, real_tab_length, panel_thickness, dist_to_hole, overlap);
+            panel_render_tab_side(n_tabs_y, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[3]);
       }
     }
+}
+
+module panel_render_tab_side(n_tabs, length, thickness, dist_to_hole, overlap, mode) {
+  if (mode > 0) {
+    panel_tab_laced(n_tabs, length, thickness, dist_to_hole, overlap, mode);
+  } else {
+    panel_tab_strip(n_tabs, length, thickness, dist_to_hole, overlap);
+  }
 }
 
 module panel_tab_strip(n_tabs, length, thickness, dist_to_hole, overlap) {
@@ -117,14 +131,7 @@ module panel_tab_strip(n_tabs, length, thickness, dist_to_hole, overlap) {
   total_width = n_tabs * BASE_UNIT - TOLERANCE;
 
   // Hole Position
-  // Tab ranges from [-length/2, length/2].
-  // The "Junction Line" (Panel Edge) is at: -length/2 + overlap.
-  // Hole is at `dist_to_hole` from Junction Line.
   hole_pos_y = -length / 2 + overlap + dist_to_hole;
-
-  // Miter Cut Logic
-  // We want to slice off the Bottom-Outer corner at 45 degrees.
-  // This creates a mitered edge for abutting panels.
 
   difference() {
     // Continuous block (Base)
@@ -136,36 +143,73 @@ module panel_tab_strip(n_tabs, length, thickness, dist_to_hole, overlap) {
         cuboid([LOCKPIN_HOLE_SIDE_LENGTH, LOCKPIN_HOLE_SIDE_LENGTH, thickness + 1], chamfer=-LOCKPIN_HOLE_CHAMFER * 1.5);
 
     // Miter Cut
-    // Remove triangular prism from Bottom-Tip to create the slope.
-    // The Tip Edge is at Y = length/2, Z = -thickness/2.
-    // We extrude a triangle along X (width).
-    // Triangle vertices relative to the Tip Edge (0,0):
-    // (0,0) -> Tip Edge (Bottom-Outer) - Include in cut locally
-    // (0, thickness) -> Top Edge (Outer) - Include in cut?? NO.
-    // Wait.
-    // We want to REMOVE the material that creates the square corner.
-    // That material is the triangle: (TipEdge, TopEdge, InnerBottom).
-    // Vertices relative to TipEdge (L/2, -T/2):
-    // 1. (0,0) - Bottom Tip.
-    // 2. (0, T) - Top Tip.
-    // 3. (-T, 0) - Bottom Inner.
-    // 
-    // Removing the triangle defined by these 3 points removes the entire end block except the top-inner triangle?
-    // NO.
-    // The block we HAVE is the rectangle.
-    // We want to KEEP the top-inner triangle.
-    // We want to REMOVE the bottom-outer triangle.
-    // Vertices of removed triangle:
-    // (0,0) - Bottom Tip.
-    // (0, T) - Top Tip.
-    // (-T, 0) - Bottom Inner.
-    // The slope line is TopTip <-> BottomInner.
-    // Everything to the "right" (towards BottomTip) is removed.
-    // Yes.
-
-    translate([-(total_width + 1) / 2, length / 2, -thickness / 2])
-      rotate([90, 0, 90])
-        linear_extrude(total_width + 1)
-          polygon([[0, 0], [0, thickness], [-thickness, 0]]);
+    panel_miter_cutter(total_width, length, thickness);
   }
+}
+
+module panel_tab_laced(n_tabs, length, thickness, dist_to_hole, overlap, mode) {
+  // Laced (Interleaved) tabs.
+  // Generates discrete tabs based on index parity.
+  // mode 1: Odd (Indices 0, 2, 4...).
+  // mode 2: Even (Indices 1, 3, 5...).
+
+  spacing = BASE_UNIT;
+
+  // Width of a single tab leg
+  // We want it slightly toleranced to not scrape neighbors.
+  tab_width = BASE_UNIT - TOLERANCE;
+
+  for (i = [0:n_tabs - 1]) {
+    // Parity Check
+    // Index 0 is "1st tab".
+    // Mode 1 (Odd): keep 0, 2, 4...
+    // Mode 2 (Even): keep 1, 3, 5...
+    keep = (mode == 1 && (i % 2 == 0)) || (mode == 2 && (i % 2 == 1));
+
+    if (keep) {
+      // Position Calculation
+      // Centered distribution of N items.
+      // P_i = (i - (N-1)/2) * S.
+      pos_x = (i - (n_tabs - 1) / 2) * spacing;
+
+      translate([pos_x, 0, 0])
+        panel_single_tab(tab_width, length, thickness, dist_to_hole, overlap);
+    }
+  }
+}
+
+module panel_single_tab(width, length, thickness, dist_to_hole, overlap) {
+  // Single Discrete Tab Geometry.
+
+  hole_pos_y = -length / 2 + overlap + dist_to_hole;
+
+  difference() {
+    // Base Tab
+    // Note: except=FRONT prevents chamfer on junction side.
+    cuboid([width, length, thickness], chamfer=BASE_CHAMFER / 2, edges=TOP, except=FRONT);
+
+    // Hole
+    translate([0, hole_pos_y, 0])
+      cuboid([LOCKPIN_HOLE_SIDE_LENGTH, LOCKPIN_HOLE_SIDE_LENGTH, thickness + 1], chamfer=-LOCKPIN_HOLE_CHAMFER * 1.5);
+
+    // Miter Cut
+    panel_miter_cutter(width, length, thickness);
+  }
+}
+
+module panel_miter_cutter(width, length, thickness) {
+  // Shared Miter Cut Logic
+  // Removes triangular prism from Bottom-Tip.
+  // Origin of cut relative to center:
+  // Tip Edge is at Y = length/2, Z = -thickness/2.
+  // We extrude a triangle in X direction.
+  // Vertices relative to Tip Edge (L/2, -T/2):
+  // 1. (0,0) - Bottom Tip.
+  // 2. (0, T) - Top Tip.
+  // 3. (-T, 0) - Bottom Inner.
+
+  translate([-(width + 1) / 2, length / 2, -thickness / 2])
+    rotate([90, 0, 90])
+      linear_extrude(width + 1)
+        polygon([[0, 0], [0, thickness], [-thickness, 0]]);
 }
