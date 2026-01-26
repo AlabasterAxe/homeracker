@@ -123,12 +123,18 @@ module assembly() {
     // Sits in [Spacing, 0] to [2*Spacing, Spacing].
     // Center is [Spacing*1.5, Spacing/2].
     
-    translate([MODULE_SPACING*1.5, MODULE_SPACING/2, BASE_UNIT/2 + BASE_STRENGTH/2])
-        color("orange")
-        panel(rows=S_LEN, cols=S_LEN, 
-              tabs=[true, true, true, true],
-              lacing=[0, 0, 2, 0]); // Left side (Side 2) laced Even (2)
+    // translate([MODULE_SPACING*1.5, MODULE_SPACING/2, BASE_UNIT/2 + BASE_STRENGTH/2])
+    //     color("orange")
+    //     panel(rows=S_LEN, cols=S_LEN, 
+    //           tabs=[true, true, true, true],
+    //           lacing=[0, 0, 2, 0]); // Left side (Side 2) laced Even (2)
               
 }
 
-assembly();
+// assembly();
+
+translate([MODULE_SPACING/2, MODULE_SPACING/2, BASE_UNIT/2 + BASE_STRENGTH/2])
+        color("purple")
+        panel(rows=11, cols=7, 
+              tabs=[false, false, true, true],
+              lacing=[0, 0, 2, 0]); 

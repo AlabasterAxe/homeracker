@@ -58,20 +58,24 @@ module panel(rows = 1, cols = 1, tabs = [true, true, true, true], lacing = [0, 0
           // Gap Cutters for Lacing (Female Slots)
           // Subtracts the Reverse Miter form from the panel edge at gap positions.
           if (tabs[0] && n_tabs_x > 0 && lacing[0] > 0) {
+            color("lime")
             translate([0, panel_height/2 + shift_y_female, 0]) 
                 panel_tab_side_cutter(n_tabs_x, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[0]);
           }
           if (tabs[1] && n_tabs_x > 0 && lacing[1] > 0) {
+            color("lime")
             translate([0, -(panel_height/2 + shift_y_female), 0]) 
                 rotate([0,0,180])
                 panel_tab_side_cutter(n_tabs_x, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[1]);
           }
           if (tabs[2] && n_tabs_y > 0 && lacing[2] > 0) {
+            color("lime")
             translate([-(panel_width/2 + shift_y_female), 0, 0]) 
                 rotate([0,0,90])
                 panel_tab_side_cutter(n_tabs_y, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[2]);
           }
           if (tabs[3] && n_tabs_y > 0 && lacing[3] > 0) {
+            color("lime")
             translate([panel_width/2 + shift_y_female, 0, 0]) 
                 rotate([0,0,-90])
                 panel_tab_side_cutter(n_tabs_y, real_tab_length, panel_thickness, dist_to_hole, overlap, lacing[3]);
@@ -173,13 +177,15 @@ module panel_tab_side_cutter(n_tabs, length, thickness, dist_to_hole, overlap, m
 module panel_single_tab(width, length, thickness, dist_to_hole, overlap) {
   hole_pos_y = -length / 2 + overlap + dist_to_hole;
 
+  additional_amount = 3;
+
   difference() {
-    cuboid([width, length, thickness], chamfer=BASE_CHAMFER / 2, edges=TOP, except=FRONT);
+    cuboid([width, length + additional_amount, thickness], chamfer=BASE_CHAMFER / 2, edges=TOP, except=FRONT);
 
     translate([0, hole_pos_y, 0])
       cuboid([LOCKPIN_HOLE_SIDE_LENGTH, LOCKPIN_HOLE_SIDE_LENGTH, thickness + 1], chamfer=-LOCKPIN_HOLE_CHAMFER * 1.5);
 
-    panel_miter_cutter(width, length, thickness);
+    panel_miter_cutter(width, length + additional_amount, thickness);
   }
 }
 
