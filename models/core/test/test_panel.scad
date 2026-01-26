@@ -18,13 +18,13 @@ module assembly() {
     
     // --- CONNECTORS ---
     
-    // 1. Bottom Row (Y=0)
-    // BL Corner (0,0): Needs +X, +Y.
-    // Base 2D2W: +Z, +X.
-    // Rotate [-90, 0, 0] -> +Y, +X.
-    translate([0, 0, 0]) 
-        rotate([-90, 0, 0])
-        connector(dimensions=2, directions=2); 
+    // // 1. Bottom Row (Y=0)
+    // // BL Corner (0,0): Needs +X, +Y.
+    // // Base 2D2W: +Z, +X.
+    // // Rotate [-90, 0, 0] -> +Y, +X.
+    // translate([0, 0, 0]) 
+    //     rotate([-90, 0, 0])
+    //     connector(dimensions=2, directions=2); 
 
     // BM (Middle) (Spacing, 0): Needs +X, -X, +Y. (T-Junction)
     // Base 2D3W: +Z, -Z, +X.
@@ -34,24 +34,24 @@ module assembly() {
         rotate([90, 0, 90])
         connector(dimensions=2, directions=3); 
 
-    // BR Corner (2*Spacing, 0): Needs -X, +Y.
-    // Base 2D2W: +Z, +X.
-    // Rotate [-90, 0, 180]? 
-    // Base->Rot X -90: (+Y, +X). Rot Z 180: (+Y, -X). Correct.
-    translate([MODULE_SPACING*2, 0, 0]) 
-        rotate([90, 0, 180])
-        connector(dimensions=2, directions=2); 
+    // // BR Corner (2*Spacing, 0): Needs -X, +Y.
+    // // Base 2D2W: +Z, +X.
+    // // Rotate [-90, 0, 180]? 
+    // // Base->Rot X -90: (+Y, +X). Rot Z 180: (+Y, -X). Correct.
+    // translate([MODULE_SPACING*2, 0, 0]) 
+    //     rotate([90, 0, 180])
+    //     connector(dimensions=2, directions=2); 
 
 
-    // 2. Top Row (Y=Spacing)
-    // TL Corner (0, Spacing): Needs +X, -Y.
-    // Base 2D2W: +Z, +X.
-    // Rot X -90 -> (+Y, +X). Rot Z -90 -> (-X, +Y)? No.
-    // Needs +X, -Y.
-    // Rot X 90 -> (-Y, +X). Correct.
-    translate([0, MODULE_SPACING, 0]) 
-        rotate([90, 0, 0])
-        connector(dimensions=2, directions=2); 
+    // // 2. Top Row (Y=Spacing)
+    // // TL Corner (0, Spacing): Needs +X, -Y.
+    // // Base 2D2W: +Z, +X.
+    // // Rot X -90 -> (+Y, +X). Rot Z -90 -> (-X, +Y)? No.
+    // // Needs +X, -Y.
+    // // Rot X 90 -> (-Y, +X). Correct.
+    // translate([0, MODULE_SPACING, 0]) 
+    //     rotate([90, 0, 0])
+    //     connector(dimensions=2, directions=2); 
 
     // TM (Middle) (Spacing, Spacing): Needs +X, -X, -Y.
     // Base 2D3W: +Z, -Z, +X.
@@ -60,19 +60,19 @@ module assembly() {
         rotate([90, 0, -90])
         connector(dimensions=2, directions=3); 
 
-    // TR Corner (2*Spacing, Spacing): Needs -X, -Y.
-    // Base 2D2W: +Z, +X.
-    // Rot X 90 -> (-Y, +X). Rot Z 180 -> (-Y, -X).
-    translate([MODULE_SPACING*2, MODULE_SPACING, 0]) 
-        rotate([90, 0, -90])
-        connector(dimensions=2, directions=2); 
+    // // TR Corner (2*Spacing, Spacing): Needs -X, -Y.
+    // // Base 2D2W: +Z, +X.
+    // // Rot X 90 -> (-Y, +X). Rot Z 180 -> (-Y, -X).
+    // translate([MODULE_SPACING*2, MODULE_SPACING, 0]) 
+    //     rotate([90, 0, -90])
+    //     connector(dimensions=2, directions=2); 
 
 
     // --- SUPPORTS ---
     
     // Left Frame Vertical (Left)
-    translate([0, MODULE_SPACING/2, 0]) 
-        support(units=S_LEN, x_holes=true);
+    // translate([0, MODULE_SPACING/2, 0]) 
+    //     support(units=S_LEN, x_holes=true);
         
     // Left Frame Horizontal (Bottom)
     translate([MODULE_SPACING/2, 0, 0]) 
@@ -98,9 +98,9 @@ module assembly() {
         rotate([0, 0, 90]) 
         support(units=S_LEN, x_holes=true);
 
-    // Right Frame Vertical (Right)
-    translate([MODULE_SPACING*2, MODULE_SPACING/2, 0]) 
-        support(units=S_LEN, x_holes=true);
+    // // Right Frame Vertical (Right)
+    // translate([MODULE_SPACING*2, MODULE_SPACING/2, 0]) 
+    //     support(units=S_LEN, x_holes=true);
 
 
     // --- PANELS ---
