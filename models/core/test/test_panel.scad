@@ -8,10 +8,12 @@ include <../main.scad>
 include <../lib/constants.scad>
 
 // Configuration
-S_LEN = 6; 
+PANEL_HEIGHT = 5; 
+
+PANEL_WIDTH = 6;
 
 // Spacing
-MODULE_SPACING = (S_LEN + 1) * BASE_UNIT;
+MODULE_SPACING = (PANEL_HEIGHT + 1) * BASE_UNIT;
 
 module assembly() {
     
@@ -26,7 +28,7 @@ module assembly() {
     // Right Edge: Laced Odd
     translate([MODULE_SPACING/2, MODULE_SPACING/2, BASE_UNIT/2 + BASE_STRENGTH/2])
         color("purple")
-        panel(rows=S_LEN, cols=S_LEN, 
+        panel(rows=PANEL_HEIGHT, cols=PANEL_WIDTH, 
               edge_styles=["tab", "laced_odd", "tab", "tab"],
               edge_holes=[false, false, true, true],
               edge_cutouts=[[false, false], [false, false], [false, true], [false, true]]
@@ -44,13 +46,13 @@ module assembly() {
     // Top Edge: Full Width Tab (No Connectors).
     // Sits below the Left Panel?
     // Let's place it separately to avoid overlap.
-    translate([MODULE_SPACING/2, -MODULE_SPACING/2, BASE_UNIT/2 + BASE_STRENGTH/2])
-        color("cyan")
-        panel(rows=S_LEN, cols=S_LEN,
-            edge_holes=[false, false, true, true],
-            edge_styles=["laced_odd", "tab", "tab", "tab"], // Top tab only
-            edge_cutouts=[[false, false], [false,false], [true,false], [true,false]] // Top full width
-        );
+    // translate([MODULE_SPACING/2, -MODULE_SPACING/2, BASE_UNIT/2 + BASE_STRENGTH/2])
+       // color("cyan")
+       // panel(rows=PANEL_HEIGHT, cols=PANEL_WIDTH,
+       //     edge_holes=[false, false, true, true],
+        //    edge_styles=["laced_odd", "tab", "tab", "tab"], // Top tab only
+        //    edge_cutouts=[[false, false], [false,false], [true,false], [true,false]] // Top full width
+      //  );
 }
 
 assembly();
